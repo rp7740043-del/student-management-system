@@ -1,0 +1,117 @@
+{% extends "layout.html" %}
+
+{% block title %}Log Attendance - {{ student.name }} - Apex Institute ERP{% endblock %}
+
+{% block content %}
+<div class="page-title-box d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-1"><i class="fas fa-user-check text-primary me-2"></i>Record Attendance</h2>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a href="/dashboard">Home</a></li>
+                <li class="breadcrumb-item"><a href="/attendance">Attendance</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ student.student_id }}</li>
+            </ol>
+        </nav>
+    </div>
+    <div>
+        <a href="/attendance" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i> Back to Roster
+        </a>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+        <div class="custom-card p-4 p-md-5 bg-white rounded border shadow-sm">
+            <!-- Student Header Badge -->
+            <div class="d-flex align-items-center justify-content-between p-3 bg-light rounded border mb-4">
+                <div class="d-flex align-items-center gap-3">
+                    <img src="/static/images/avatar.svg" width="48" height="48" class="rounded-circle border">
+                    <div>
+                        <h5 class="fw-bold mb-0 text-dark">{{ student.name }}</h5>
+                        <small class="text-muted">Roll: <strong>{{ student.student_id }}</strong> | Dept: <strong>{{ student.department }}</strong> ({{ student.class_year }})</small>
+                    </div>
+                </div>
+                <span class="badge bg-secondary px-3 py-2">Attendance Form</span>
+            </div>
+
+            <form action="/attendance/entry/{{ student.id }}" method="post" id="attendanceForm">
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <label for="totalClasses" class="form-label fw-semibold">Total Conducted Classes / Hours <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="fas fa-calendar-alt text-muted"></i></span>
+                            <input type="number" min="0" class="form-control" id="totalClasses" name="total_classes" 
+                                   value="{{ attendance.total_classes if attendance else 120 }}" required>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="attendedClasses" class="form-label fw-semibold">Attended Classes / Hours <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="fas fa-user-check text-muted"></i></span>
+                            <input type="number" min="0" class="form-control" id="attendedClasses" name="attended_classes" 
+                                   value="{{ attendance.attended_classes if attendance else 100 }}" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dynamic Preview Card -->
+                <div class="p-3 rounded border mb-4 text-center bg-light" id="previewContainer">
+                    <span class="text-muted small text-uppercase fw-semibold d-block mb-1">Calculated Attendance Percentage</span>
+                    <h2 class="fw-bold mb-1" id="attendancePctPreview">0.00%</h2>
+                    <div id="attendanceAlertBox" class="mt-2">
+                        <!-- Dynamic JS badge inserted here -->
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2">
+                    <a href="/attendance" class="btn btn-light px-4">Cancel</a>
+                    <button type="submit" class="btn btn-primary px-4 shadow-sm">
+                        <i class="fas fa-save me-1"></i> Update Attendance Record
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const totalInput = document.getElementById('totalClasses');
+        const attendedInput = document.getElementById('attendedClasses');
+        const pctPreview = document.getElementById('attendancePctPreview');
+        const alertBox = document.getElementById('attendanceAlertBox');
+
+        function updatePreview() {
+            const total = parseFloat(totalInput.value) || 0;
+            const attended = parseFloat(attendedInput.value) || 0;
+
+            if (total <= 0) {
+                pctPreview.textContent = '0.00%';
+                pctPreview.className = 'fw-bold mb-1 text-muted';
+                alertBox.innerHTML = '<span class="badge bg-secondary">Total classes must be > 0</span>';
+                return;
+            }
+
+            const pct = Math.min(100, Math.max(0, (attended / total) * 100));
+            pctPreview.textContent = pct.toFixed(2) + '%';
+
+            if (pct >= 75.0) {
+                pctPreview.className = 'fw-bold mb-1 text-success';
+                alertBox.innerHTML = '<span class="badge bg-success-subtle text-success border border-success-subtle p-2"><i class="fas fa-check-circle me-1"></i> Normal Attendance Status (Meets Statutory 75% Requirement)</span>';
+            } else {
+                pctPreview.className = 'fw-bold mb-1 text-danger';
+                alertBox.innerHTML = '<span class="badge bg-danger text-white p-2"><i class="fas fa-exclamation-triangle me-1"></i> SHORTAGE WARNING: Below the mandatory 75% university requirement!</span>';
+            }
+        }
+
+        totalInput.addEventListener('input', updatePreview);
+        attendedInput.addEventListener('input', updatePreview);
+        updatePreview();
+    });
+</script>
+{% endblock %}

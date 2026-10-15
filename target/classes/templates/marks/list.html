@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Academic Marks Management - College ERP</title>
+</head>
+<body>
+<div th:replace="~{layout/main :: html(~{::#mainContent}, 'Marks Management', 'marks')}">
+    <div id="mainContent">
+
+        <div class="page-title-box">
+            <div>
+                <h1><i class="fas fa-clipboard-check text-primary me-2"></i>Curriculum Marks Management</h1>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a th:href="@{/dashboard}">Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Marks</li>
+                    </ol>
+                </nav>
+            </div>
+            <div>
+                <a th:href="@{/reports}" class="btn btn-outline-primary">
+                    <i class="fas fa-file-invoice me-1"></i> View All Grade Reports
+                </a>
+            </div>
+        </div>
+
+        <!-- Subject Performance Summary Cards -->
+        <div class="row g-3 mb-4">
+            <div class="col-12">
+                <div class="custom-card p-3">
+                    <div class="fw-bold text-primary mb-2">
+                        <i class="fas fa-chart-line me-1"></i> System-Wide Subject Averages (Out of 100):
+                    </div>
+                    <div class="row g-2">
+                        <div class="col-md" th:each="entry : ${subjectAverages}">
+                            <div class="p-2 border rounded bg-light text-center">
+                                <small class="text-muted d-block text-truncate" th:text="${entry.key}">Subject</small>
+                                <strong class="fs-5 text-dark" th:text="${entry.value}">0.0</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Student Marks Roster -->
+        <div class="custom-card">
+            <div class="card-header-styled">
+                <h5><i class="fas fa-user-edit text-primary"></i>Student Academic Marks Roster</h5>
+                <span class="text-muted small">5 Subjects (OOP, DBMS, DSA, CN, OS)</span>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table erp-table align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Student ID</th>
+                            <th>Student Name</th>
+                            <th>Department</th>
+                            <th>Class Year</th>
+                            <th>Marks Status</th>
+                            <th class="text-end">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="s : ${students}">
+                            <td><strong class="text-primary font-monospace" th:text="${s.studentId}">STU2024001</strong></td>
+                            <td class="fw-bold" th:text="${s.name}">Aarav Sharma</td>
+                            <td><span class="badge bg-light text-dark border fw-semibold" th:text="${s.department}">CSE</span></td>
+                            <td><span class="badge bg-secondary-subtle text-secondary" th:text="${s.classYear}">TE</span></td>
+                            <td>
+                                <div th:if="${#lists.isEmpty(s.marks)}">
+                                    <span class="badge bg-secondary">Pending Entry</span>
+                                </div>
+                                <div th:if="${not #lists.isEmpty(s.marks)}">
+                                    <span class="badge bg-success-subtle text-success me-1">
+                                        <i class="fas fa-check"></i> <span th:text="${#lists.size(s.marks)}">5</span> Subjects Recorded
+                                    </span>
+                                    <small class="text-muted" th:text="'Avg: ' + ${s.calculatePercentage()} + '%'"></small>
+                                </div>
+                            </td>
+                            <td class="text-end">
+                                <a th:href="@{'/marks/entry/' + ${s.id}}" class="btn btn-sm btn-primary">
+                                    <i class="fas fa-pen me-1"></i> Enter / Edit Marks
+                                </a>
+                                <a th:href="@{'/reports/view/' + ${s.id}}" class="btn btn-sm btn-outline-info">
+                                    <i class="fas fa-file-alt"></i> Marksheet
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>
+</body>
+</html>

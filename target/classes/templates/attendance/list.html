@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Attendance Tracking - College ERP</title>
+</head>
+<body>
+<div th:replace="~{layout/main :: html(~{::#mainContent}, 'Attendance Tracking', 'attendance')}">
+    <div id="mainContent">
+
+        <div class="page-title-box">
+            <div>
+                <h1><i class="fas fa-calendar-check text-primary me-2"></i>Attendance Tracking &amp; Compliance</h1>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a th:href="@{/dashboard}">Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Attendance</li>
+                    </ol>
+                </nav>
+            </div>
+            <div>
+                <a th:href="@{/students}" class="btn btn-outline-secondary">
+                    <i class="fas fa-users me-1"></i> Student Directory
+                </a>
+            </div>
+        </div>
+
+        <!-- Metric Banner Card -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-6">
+                <div class="custom-card p-4 h-100 d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="text-muted fw-bold text-uppercase small">Institutional Average Attendance</div>
+                        <div class="display-6 fw-bold text-primary">
+                            <span th:text="${overallAverage}">0.0</span>%
+                        </div>
+                        <small class="text-muted">Target threshold: 75% mandatory university minimum</small>
+                    </div>
+                    <div class="stat-icon bg-primary-subtle text-primary" style="width: 60px; height: 60px; font-size: 1.8rem; border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-university"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="custom-card p-4 h-100 bg-light border">
+                    <div class="fw-bold text-dark mb-1">
+                        <i class="fas fa-shield-alt text-warning me-1"></i> University Attendance Regulations
+                    </div>
+                    <p class="small text-muted mb-0">
+                        As per university norms, every enrolled candidate must maintain a minimum of <strong>75% attendance</strong>
+                        in aggregate lectures and laboratories. Students with attendance below 75% are flagged in <span class="text-danger fw-bold">red</span>
+                        and face examination debarment unless condoned by the Academic Dean.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Attendance Table -->
+        <div class="custom-card">
+            <div class="card-header-styled">
+                <h5><i class="fas fa-list-check text-primary"></i>Student Attendance Register</h5>
+                <span class="badge bg-secondary-subtle text-secondary" th:text="${#lists.size(students) + ' Students'}">12 Students</span>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table erp-table align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Student ID</th>
+                            <th>Student Name</th>
+                            <th>Department</th>
+                            <th>Total Classes</th>
+                            <th>Attended Classes</th>
+                            <th>Attendance Percentage</th>
+                            <th>Compliance Status</th>
+                            <th class="text-end">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="s : ${students}">
+                            <td><strong class="text-primary font-monospace" th:text="${s.studentId}">STU2024001</strong></td>
+                            <td class="fw-bold" th:text="${s.name}">Aarav Sharma</td>
+                            <td><span class="badge bg-light text-dark border fw-semibold" th:text="${s.department}">CSE</span></td>
+                            
+                            <!-- Total Classes -->
+                            <td>
+                                <span class="fw-semibold" th:text="${s.attendance != null ? s.attendance.totalClasses : 0}">120</span>
+                            </td>
+
+                            <!-- Attended Classes -->
+                            <td>
+                                <span class="fw-semibold" th:text="${s.attendance != null ? s.attendance.attendedClasses : 0}">108</span>
+                            </td>
+
+                            <!-- Attendance % -->
+                            <td>
+                                <div class="d-flex align-items-center gap-2" th:if="${s.attendance != null}">
+                                    <strong class="fs-6" th:classappend="${s.attendance.shortage ? 'text-danger' : 'text-success'}" 
+                                            th:text="${s.attendance.percentage + '%'}">90.0%</strong>
+                                </div>
+                                <span th:if="${s.attendance == null}" class="text-muted small">N/A</span>
+                            </td>
+
+                            <!-- Compliance Status Badge -->
+                            <td>
+                                <div th:if="${s.attendance != null}">
+                                    <!-- Safe (>= 75%) -->
+                                    <span th:if="${!s.attendance.shortage}" class="badge-attendance-ok">
+                                        <i class="fas fa-check-circle"></i> Satisfactory (&ge;75%)
+                                    </span>
+                                    <!-- Shortage (< 75%) flagged in RED -->
+                                    <span th:if="${s.attendance.shortage}" class="badge-attendance-shortage">
+                                        <i class="fas fa-exclamation-triangle"></i> Shortage (&lt;75%)
+                                    </span>
+                                </div>
+                                <div th:if="${s.attendance == null}">
+                                    <span class="badge bg-secondary">Unrecorded</span>
+                                </div>
+                            </td>
+
+                            <td class="text-end">
+                                <a th:href="@{'/attendance/entry/' + ${s.id}}" class="btn btn-sm btn-primary">
+                                    <i class="fas fa-edit me-1"></i> Update Attendance
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>
+</body>
+</html>

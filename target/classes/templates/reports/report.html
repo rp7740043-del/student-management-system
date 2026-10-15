@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="'Academic Transcript - ' + ${report.studentName} + ' (' + ${report.studentId} + ')'">Academic Transcript</title>
+</head>
+<body>
+<div th:replace="~{layout/main :: html(~{::#mainContent}, 'Academic Transcript', 'reports')}">
+    <div id="mainContent">
+
+        <!-- Top Action Controls (Hidden on Print) -->
+        <div class="page-title-box no-print mb-4">
+            <div>
+                <h1><i class="fas fa-file-invoice text-primary me-2"></i>Official Academic Grade Sheet</h1>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a th:href="@{/dashboard}">Home</a></li>
+                        <li class="breadcrumb-item"><a th:href="@{/reports}">Reports</a></li>
+                        <li class="breadcrumb-item active" aria-current="page" th:text="${report.studentId}">STU2024001</li>
+                    </ol>
+                </nav>
+            </div>
+            <div class="d-flex gap-2">
+                <button type="button" class="btn btn-primary shadow-sm" onclick="window.print()">
+                    <i class="fas fa-print me-1"></i> Print / Download PDF
+                </button>
+                <a th:href="@{'/marks/entry/' + ${student.id}}" class="btn btn-outline-secondary">
+                    <i class="fas fa-pen-nib me-1"></i> Modify Marks
+                </a>
+                <a th:href="@{/reports}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-1"></i> All Reports
+                </a>
+            </div>
+        </div>
+
+        <!-- Official Printed Marksheet Document Container -->
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="marksheet-card">
+
+                    <!-- Marksheet Header -->
+                    <div class="marksheet-header">
+                        <div class="d-flex align-items-center justify-content-center gap-3 mb-2">
+                            <img th:src="@{/images/logo.svg}" alt="Apex Crest" style="height: 75px; width: 75px;">
+                            <div>
+                                <div class="college-title" th:text="${collegeName}">Apex Institute of Technology &amp; Engineering</div>
+                                <div class="college-meta fw-semibold" th:text="${accreditation}">
+                                    Accredited with 'A+' Grade by NAAC | Autonomous Institute affiliated to State University
+                                </div>
+                                <div class="college-meta">
+                                    Knowledge Park Campus, Innovation Way, Pune - 411001 | College Code: <strong th:text="${collegeCode}">AITE-PUNE</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="doc-title">
+                            STATEMENT OF GRADES &amp; ACADEMIC PERFORMANCE TRANSCRIPT
+                        </div>
+                    </div>
+
+                    <!-- Student Profile Section -->
+                    <div class="p-3 bg-light rounded-2 border mb-4">
+                        <table class="table student-meta-table mb-0">
+                            <tbody>
+                                <tr>
+                                    <td class="meta-label">Student ID / Roll:</td>
+                                    <td class="meta-value">
+                                        <strong class="text-primary font-monospace fs-6" th:text="${report.studentId}">STU2024001</strong>
+                                    </td>
+                                    <td class="meta-label">Academic Program:</td>
+                                    <td class="meta-value">
+                                        Bachelor of Engineering (<strong th:text="${report.department}">CSE</strong>)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="meta-label">Candidate Name:</td>
+                                    <td class="meta-value">
+                                        <strong class="text-dark" th:text="${report.studentName}">Aarav Sharma</strong>
+                                    </td>
+                                    <td class="meta-label">Academic Class Year:</td>
+                                    <td class="meta-value">
+                                        <span class="badge bg-secondary-subtle text-secondary" th:text="${report.classYear}">TE</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="meta-label">Date of Birth:</td>
+                                    <td class="meta-value" th:text="${#temporals.format(report.dob, 'dd MMMM yyyy')}">14 May 2003</td>
+                                    <td class="meta-label">Gender:</td>
+                                    <td class="meta-value" th:text="${report.gender}">Male</td>
+                                </tr>
+                                <tr>
+                                    <td class="meta-label">Email ID:</td>
+                                    <td class="meta-value" th:text="${report.email}">aarav@college.edu</td>
+                                    <td class="meta-label">Date of Issue:</td>
+                                    <td class="meta-value" th:text="${report.issueDate}">15 October 2026</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Subject Scores Table -->
+                    <div class="table-responsive">
+                        <table class="marks-score-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 50px;" class="text-center">Sr.</th>
+                                    <th>Subject / Course Title</th>
+                                    <th style="width: 130px;" class="text-center">Maximum Marks</th>
+                                    <th style="width: 130px;" class="text-center">Passing Marks</th>
+                                    <th style="width: 150px;" class="text-center">Marks Obtained</th>
+                                    <th style="width: 130px;" class="text-center">Result</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="m, iter : ${report.marks}">
+                                    <td class="text-center" th:text="${iter.count}">1</td>
+                                    <td class="fw-semibold text-dark" th:text="${m.subject}">Subject Name</td>
+                                    <td class="text-center" th:text="${m.maxMarks}">100.0</td>
+                                    <td class="text-center">35.0</td>
+                                    <td class="text-center fw-bold" 
+                                        th:classappend="${m.marksObtained < 35.0 ? 'text-danger' : 'text-primary'}"
+                                        th:text="${m.marksObtained}">85.0</td>
+                                    <td class="text-center">
+                                        <span th:if="${m.marksObtained >= 35.0}" class="badge bg-success-subtle text-success">PASS</span>
+                                        <span th:if="${m.marksObtained < 35.0}" class="badge bg-danger-subtle text-danger">FAIL</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr class="bg-light fw-bold">
+                                    <td colspan="2" class="text-end">AGGREGATE TOTAL:</td>
+                                    <td class="text-center" th:text="${report.totalMaxMarks}">500.0</td>
+                                    <td class="text-center">175.0</td>
+                                    <td class="text-center fs-5 text-primary" th:text="${report.totalMarksObtained}">427.0</td>
+                                    <td class="text-center">
+                                        <span th:if="${report.resultStatus == 'PASS'}" class="badge-pass">PASS</span>
+                                        <span th:if="${report.resultStatus == 'FAIL'}" class="badge-fail">FAIL</span>
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+
+                    <!-- Performance Evaluation & Attendance Breakdown -->
+                    <div class="row g-3 my-2">
+                        <!-- Grade & Percentage Summary -->
+                        <div class="col-md-6">
+                            <div class="p-3 border rounded-2 h-100 bg-white">
+                                <h6 class="fw-bold text-primary mb-2">
+                                    <i class="fas fa-award me-1"></i> Academic Result Evaluation
+                                </h6>
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <span class="text-muted">Aggregate Percentage:</span>
+                                    <strong class="fs-5 text-dark" th:text="${report.percentage + '%'}">85.4%</strong>
+                                </div>
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <span class="text-muted">Letter Grade:</span>
+                                    <span class="grade-badge" 
+                                          th:classappend="'grade-' + ${#strings.replace(report.grade, '+', 'p')}"
+                                          th:text="${report.grade}">A+</span>
+                                </div>
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <span class="text-muted">Final Result Status:</span>
+                                    <span th:if="${report.resultStatus == 'PASS'}" class="badge-pass">PASSED</span>
+                                    <span th:if="${report.resultStatus == 'FAIL'}" class="badge-fail">FAILED</span>
+                                </div>
+                                <div class="small text-muted mt-2 pt-2 border-top">
+                                    <strong>Classification:</strong> <span th:text="${report.remarks}">First Class with Distinction</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Attendance Verification Card -->
+                        <div class="col-md-6">
+                            <div class="p-3 border rounded-2 h-100 bg-white">
+                                <h6 class="fw-bold text-primary mb-2">
+                                    <i class="fas fa-calendar-check me-1"></i> Attendance Verification
+                                </h6>
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <span class="text-muted">Classes Attended / Total:</span>
+                                    <strong class="text-dark" th:text="${report.attendedClasses + ' / ' + report.totalClasses}">108 / 120</strong>
+                                </div>
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <span class="text-muted">Attendance Percentage:</span>
+                                    <strong class="fs-5" th:classappend="${report.attendanceShortage ? 'text-danger' : 'text-success'}" 
+                                            th:text="${report.attendancePercentage + '%'}">90.0%</strong>
+                                </div>
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <span class="text-muted">Eligibility for Exam:</span>
+                                    <span th:if="${!report.attendanceShortage}" class="badge-attendance-ok">
+                                        <i class="fas fa-check"></i> Eligible (&ge;75%)
+                                    </span>
+                                    <span th:if="${report.attendanceShortage}" class="badge-attendance-shortage">
+                                        <i class="fas fa-times"></i> Debarred (&lt;75% Shortage)
+                                    </span>
+                                </div>
+                                <div class="small text-muted mt-2 pt-2 border-top">
+                                    Institutional Rule: Mandatory 75% attendance for degree award.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Grading Scale Legend (Small print) -->
+                    <div class="mt-3 p-2 bg-light rounded text-center small text-muted">
+                        <strong>Grading System:</strong>
+                        O &ge; 90% (Outstanding) | A+ &ge; 80% (Excellent) | A &ge; 70% (Very Good) | B &ge; 60% (Good) | C &ge; 50% (Average) | D &ge; 40% (Pass) | F &lt; 40% or Sub &lt; 35 (Fail)
+                    </div>
+
+                    <!-- Official Signatures Block -->
+                    <div class="marksheet-signatures">
+                        <div class="signature-block">
+                            Prepared &amp; Verified By<br>
+                            <small class="text-muted">Academic Clerk</small>
+                        </div>
+                        <div class="signature-block">
+                            Head of Department<br>
+                            <small class="text-muted" th:text="${report.department}">Department</small>
+                        </div>
+                        <div class="signature-block">
+                            Controller of Examinations<br>
+                            <small class="text-muted">Apex Institute of Technology</small>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+</body>
+</html>

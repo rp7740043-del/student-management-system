@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="100%" height="100%">
+  <defs>
+    <linearGradient id="classBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <linearGradient id="boardGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#14532d"/>
+      <stop offset="100%" stop-color="#052e16"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="800" height="450" fill="url(#classBg)"/>
+
+  <!-- Smart Blackboard -->
+  <rect x="180" y="40" width="440" height="200" rx="8" fill="url(#boardGrad)" stroke="#854d0e" stroke-width="8"/>
+  <text x="210" y="90" font-family="'Courier New', monospace" font-size="20" fill="#fef08a" font-weight="bold">// College OOPs Project</text>
+  <text x="210" y="125" font-family="'Courier New', monospace" font-size="16" fill="#86efac">class Student extends Person {</text>
+  <text x="235" y="155" font-family="'Courier New', monospace" font-size="15" fill="#93c5fd">  // Encapsulation, Abstraction, Polymorphism</text>
+  <text x="235" y="185" font-family="'Courier New', monospace" font-size="15" fill="#cbd5e1">  public void calculateResult();</text>
+  <text x="210" y="215" font-family="'Courier New', monospace" font-size="16" fill="#86efac">}</text>
+
+  <!-- Instructor / Speaker Podium -->
+  <polygon points="120,240 160,240 170,360 110,360" fill="#334155"/>
+  <rect x="105" y="228" width="65" height="14" rx="3" fill="#64748b"/>
+
+  <!-- Desks and Seated Students -->
+  <!-- Row 1 -->
+  <ellipse cx="280" cy="300" rx="18" ry="18" fill="#f87171"/> <!-- Head -->
+  <path d="M255 350 Q 280 320 305 350 Z" fill="#3b82f6"/> <!-- Body -->
+  <rect x="230" y="340" width="100" height="30" rx="4" fill="#475569"/> <!-- Desk -->
+  <rect x="255" y="325" width="40" height="22" rx="3" fill="#94a3b8"/> <!-- Laptop -->
+
+  <ellipse cx="440" cy="300" rx="18" ry="18" fill="#fbbf24"/>
+  <path d="M415 350 Q 440 320 465 350 Z" fill="#8b5cf6"/>
+  <rect x="390" y="340" width="100" height="30" rx="4" fill="#475569"/>
+  <rect x="415" y="325" width="40" height="22" rx="3" fill="#94a3b8"/>
+
+  <ellipse cx="600" cy="300" rx="18" ry="18" fill="#34d399"/>
+  <path d="M575 350 Q 600 320 625 350 Z" fill="#ec4899"/>
+  <rect x="550" y="340" width="100" height="30" rx="4" fill="#475569"/>
+  <rect x="575" y="325" width="40" height="22" rx="3" fill="#94a3b8"/>
+
+  <!-- Floor line -->
+  <rect x="0" y="410" width="800" height="40" fill="#0f172a"/>
+</svg>

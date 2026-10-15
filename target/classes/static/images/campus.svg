@@ -1,0 +1,131 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600" width="100%" height="100%">
+  <defs>
+    <linearGradient id="skyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="40%" stop-color="#1e3a8a"/>
+      <stop offset="80%" stop-color="#2563eb"/>
+      <stop offset="100%" stop-color="#60a5fa"/>
+    </linearGradient>
+    <linearGradient id="buildingGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#f8fafc"/>
+      <stop offset="50%" stop-color="#e2e8f0"/>
+      <stop offset="100%" stop-color="#cbd5e1"/>
+    </linearGradient>
+    <linearGradient id="roofGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#b91c1c"/>
+      <stop offset="100%" stop-color="#7f1d1d"/>
+    </linearGradient>
+    <linearGradient id="lawnGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#15803d"/>
+      <stop offset="100%" stop-color="#166534"/>
+    </linearGradient>
+    <linearGradient id="overlay" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="rgba(15, 23, 42, 0.7)"/>
+      <stop offset="100%" stop-color="rgba(30, 58, 138, 0.4)"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Sky -->
+  <rect width="1200" height="600" fill="url(#skyGrad)"/>
+
+  <!-- Stars / Academic Sparkles -->
+  <circle cx="150" cy="80" r="1.5" fill="#ffffff" opacity="0.8"/>
+  <circle cx="320" cy="60" r="2" fill="#ffffff" opacity="0.6"/>
+  <circle cx="850" cy="110" r="1.5" fill="#ffffff" opacity="0.7"/>
+  <circle cx="1020" cy="70" r="2.5" fill="#ffffff" opacity="0.9"/>
+  <circle cx="680" cy="90" r="1.5" fill="#ffffff" opacity="0.5"/>
+
+  <!-- Distant Mountains/Trees Silhouette -->
+  <path d="M0 380 Q 200 340 400 370 T 800 360 T 1200 380 L 1200 480 L 0 480 Z" fill="#1e293b" opacity="0.6"/>
+
+  <!-- Left Wing Building -->
+  <rect x="220" y="270" width="260" height="180" fill="url(#buildingGrad)" rx="2"/>
+  <polygon points="210,270 350,220 490,270" fill="url(#roofGrad)"/>
+  <!-- Left Wing Windows -->
+  <g fill="#0284c7" opacity="0.8">
+    <rect x="250" y="290" width="25" height="35" rx="3"/>
+    <rect x="290" y="290" width="25" height="35" rx="3"/>
+    <rect x="330" y="290" width="25" height="35" rx="3"/>
+    <rect x="370" y="290" width="25" height="35" rx="3"/>
+    <rect x="410" y="290" width="25" height="35" rx="3"/>
+
+    <rect x="250" y="340" width="25" height="35" rx="3"/>
+    <rect x="290" y="340" width="25" height="35" rx="3"/>
+    <rect x="330" y="340" width="25" height="35" rx="3"/>
+    <rect x="370" y="340" width="25" height="35" rx="3"/>
+    <rect x="410" y="340" width="25" height="35" rx="3"/>
+
+    <rect x="250" y="390" width="25" height="35" rx="3"/>
+    <rect x="290" y="390" width="25" height="35" rx="3"/>
+    <rect x="330" y="390" width="25" height="35" rx="3"/>
+    <rect x="370" y="390" width="25" height="35" rx="3"/>
+    <rect x="410" y="390" width="25" height="35" rx="3"/>
+  </g>
+
+  <!-- Right Wing Building -->
+  <rect x="720" y="270" width="260" height="180" fill="url(#buildingGrad)" rx="2"/>
+  <polygon points="710,270 850,220 990,270" fill="url(#roofGrad)"/>
+  <!-- Right Wing Windows -->
+  <g fill="#0284c7" opacity="0.8">
+    <rect x="750" y="290" width="25" height="35" rx="3"/>
+    <rect x="790" y="290" width="25" height="35" rx="3"/>
+    <rect x="830" y="290" width="25" height="35" rx="3"/>
+    <rect x="870" y="290" width="25" height="35" rx="3"/>
+    <rect x="910" y="290" width="25" height="35" rx="3"/>
+
+    <rect x="750" y="340" width="25" height="35" rx="3"/>
+    <rect x="790" y="340" width="25" height="35" rx="3"/>
+    <rect x="830" y="340" width="25" height="35" rx="3"/>
+    <rect x="870" y="340" width="25" height="35" rx="3"/>
+    <rect x="910" y="340" width="25" height="35" rx="3"/>
+
+    <rect x="750" y="390" width="25" height="35" rx="3"/>
+    <rect x="790" y="390" width="25" height="35" rx="3"/>
+    <rect x="830" y="390" width="25" height="35" rx="3"/>
+    <rect x="870" y="390" width="25" height="35" rx="3"/>
+    <rect x="910" y="390" width="25" height="35" rx="3"/>
+  </g>
+
+  <!-- Center Grand Hall / Clock Tower -->
+  <rect x="480" y="190" width="240" height="260" fill="#ffffff"/>
+  <!-- Tower Upper Section -->
+  <rect x="540" y="110" width="120" height="85" fill="#f1f5f9"/>
+  <polygon points="530,110 600,45 670,110" fill="url(#roofGrad)"/>
+  <!-- Spire & Flag -->
+  <line x1="600" y1="45" x2="600" y2="15" stroke="#fbbf24" stroke-width="3"/>
+  <polygon points="600,18 630,26 600,34" fill="#3b82f6"/>
+
+  <!-- Clock Face -->
+  <circle cx="600" cy="150" r="22" fill="#ffffff" stroke="#1e3a8a" stroke-width="3"/>
+  <circle cx="600" cy="150" r="3" fill="#1e3a8a"/>
+  <line x1="600" y1="150" x2="600" y2="136" stroke="#1e3a8a" stroke-width="2.5"/>
+  <line x1="600" y1="150" x2="610" y2="150" stroke="#1e3a8a" stroke-width="2"/>
+
+  <!-- Pediment / Classical Triangle Portico -->
+  <polygon points="460,240 600,175 740,240" fill="#e2e8f0" stroke="#94a3b8" stroke-width="2"/>
+  <circle cx="600" cy="215" r="14" fill="#1e3a8a"/>
+
+  <!-- Classical Columns -->
+  <g fill="#f8fafc" stroke="#cbd5e1" stroke-width="2">
+    <rect x="495" y="240" width="22" height="190" rx="3"/>
+    <rect x="545" y="240" width="22" height="190" rx="3"/>
+    <rect x="635" y="240" width="22" height="190" rx="3"/>
+    <rect x="685" y="240" width="22" height="190" rx="3"/>
+  </g>
+
+  <!-- Grand Entrance Arch & Door -->
+  <path d="M575 430 L575 350 A 25 25 0 0 1 625 350 L625 430 Z" fill="#0f172a"/>
+  <!-- Steps -->
+  <rect x="440" y="430" width="320" height="10" fill="#cbd5e1"/>
+  <rect x="420" y="440" width="360" height="10" fill="#94a3b8"/>
+  <rect x="400" y="450" width="400" height="12" fill="#64748b"/>
+
+  <!-- Green Lawn Forecourt -->
+  <path d="M0 450 L1200 450 L1200 600 L0 600 Z" fill="url(#lawnGrad)"/>
+
+  <!-- Walkway to Main Building -->
+  <polygon points="560,462 640,462 760,600 440,600" fill="#e2e8f0" opacity="0.9"/>
+
+  <!-- Top Dark Blue Gradient Overlay for text contrast -->
+  <rect width="1200" height="600" fill="url(#overlay)"/>
+</svg>

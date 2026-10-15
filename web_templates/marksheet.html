@@ -1,0 +1,263 @@
+{% extends "layout.html" %}
+
+{% block title %}Academic Transcript - {{ report.name }} ({{ report.student_id }}) - Apex Institute ERP{% endblock %}
+
+{% block extra_head %}
+<style>
+    @media print {
+        body { background-color: #ffffff !important; }
+        .top-navbar, .sidebar, .erp-footer, .no-print, .alert { display: none !important; }
+        .app-wrapper { display: block !important; }
+        .main-content { padding: 0 !important; }
+        .marksheet-card { border: 2px solid #000 !important; box-shadow: none !important; }
+    }
+    .marksheet-card {
+        background: #ffffff;
+        border: 2px solid #1e3a8a;
+        border-radius: 8px;
+        padding: 40px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+    }
+    .marksheet-header {
+        border-bottom: 2px solid #1e3a8a;
+        padding-bottom: 20px;
+        margin-bottom: 25px;
+        text-align: center;
+    }
+    .college-title {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: #1e3a8a;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .college-meta {
+        font-size: 0.85rem;
+        color: #475569;
+    }
+    .doc-title {
+        background: #1e3a8a;
+        color: #ffffff;
+        font-weight: 700;
+        padding: 6px 12px;
+        font-size: 0.95rem;
+        letter-spacing: 1.5px;
+        margin-top: 15px;
+        display: inline-block;
+        border-radius: 4px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Top Action Controls (Hidden on Print) -->
+<div class="page-title-box no-print d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-1"><i class="fas fa-file-invoice text-primary me-2"></i>Official Academic Grade Sheet</h2>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a href="/dashboard">Home</a></li>
+                <li class="breadcrumb-item"><a href="/reports">Reports</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ report.student_id }}</li>
+            </ol>
+        </nav>
+    </div>
+    <div class="d-flex gap-2">
+        <button type="button" class="btn btn-primary shadow-sm" onclick="window.print()">
+            <i class="fas fa-print me-1"></i> Print / Download PDF
+        </button>
+        <a href="/marks/entry/{{ report.id }}" class="btn btn-outline-secondary">
+            <i class="fas fa-pen-nib me-1"></i> Modify Marks
+        </a>
+        <a href="/reports" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i> All Reports
+        </a>
+    </div>
+</div>
+
+<!-- Official Printed Marksheet Document Container -->
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="marksheet-card">
+            <!-- Marksheet Header -->
+            <div class="marksheet-header">
+                <div class="d-flex align-items-center justify-content-center gap-3 mb-2">
+                    <img src="/static/images/logo.svg" alt="Apex Crest" style="height: 75px; width: 75px;">
+                    <div>
+                        <div class="college-title">Apex Institute of Technology &amp; Engineering</div>
+                        <div class="college-meta fw-semibold">
+                            Accredited with 'A+' Grade by NAAC | Autonomous Institute affiliated to State University
+                        </div>
+                        <div class="college-meta">
+                            Knowledge Park Campus, Innovation Way, Pune - 411001 | College Code: <strong>AITE-PUNE</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="doc-title">
+                    STATEMENT OF GRADES &amp; ACADEMIC PERFORMANCE TRANSCRIPT
+                </div>
+            </div>
+
+            <!-- Student Profile Information Grid -->
+            <div class="row g-3 mb-4 p-3 rounded" style="background-color: #f8fafc; border: 1px solid #e2e8f0;">
+                <div class="col-md-6">
+                    <table class="table table-sm table-borderless mb-0">
+                        <tr>
+                            <td class="text-muted" style="width: 140px;">Student Name:</td>
+                            <td class="fw-bold text-dark">{{ report.name }}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted">Student ID / Roll:</td>
+                            <td class="fw-bold text-primary">{{ report.student_id }}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted">Department:</td>
+                            <td><strong>{{ report.department }}</strong></td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted">Class Year:</td>
+                            <td>{{ report.class_year }}</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="col-md-6">
+                    <table class="table table-sm table-borderless mb-0">
+                        <tr>
+                            <td class="text-muted" style="width: 140px;">Email Address:</td>
+                            <td>{{ report.email }}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted">Date of Birth:</td>
+                            <td>{{ report.dob }}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted">Gender:</td>
+                            <td>{{ report.gender }}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted">Admission Date:</td>
+                            <td>{{ report.admission_date }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Course Marks Table -->
+            <div class="table-responsive mb-4">
+                <table class="table table-bordered align-middle text-center mb-0">
+                    <thead style="background-color: #1e3a8a; color: #ffffff;">
+                        <tr>
+                            <th style="width: 60px;">Sr.</th>
+                            <th class="text-start">Course Title / Subject</th>
+                            <th style="width: 120px;">Max Marks</th>
+                            <th style="width: 120px;">Min Pass</th>
+                            <th style="width: 140px;">Marks Obtained</th>
+                            <th style="width: 100px;">Subject Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for mark in report.marks %}
+                        <tr>
+                            <td class="fw-bold text-muted">{{ loop.index }}</td>
+                            <td class="text-start fw-semibold text-dark">{{ mark.subject }}</td>
+                            <td>100.0</td>
+                            <td>35.0</td>
+                            <td class="fw-bold {{ 'text-danger' if mark.marks_obtained < 35.0 else 'text-dark' }}">
+                                {{ mark.marks_obtained }}
+                            </td>
+                            <td>
+                                {% if mark.marks_obtained >= 35.0 %}
+                                    <span class="badge bg-success-subtle text-success">PASS</span>
+                                {% else %}
+                                    <span class="badge bg-danger-subtle text-danger fw-bold">FAIL</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot class="table-light fw-bold">
+                        <tr>
+                            <td colspan="2" class="text-end">AGGREGATE TOTAL:</td>
+                            <td>500.0</td>
+                            <td>175.0</td>
+                            <td class="text-primary">{{ report.total_marks }}</td>
+                            <td>
+                                {% if report.result_status == 'PASS' %}
+                                    <span class="text-success">CLEARED</span>
+                                {% else %}
+                                    <span class="text-danger">BACKLOG</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+            <!-- Summary Evaluation Box -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-3">
+                    <div class="p-3 rounded border text-center bg-light">
+                        <small class="text-muted d-block text-uppercase fw-semibold">Aggregate Percentage</small>
+                        <h3 class="fw-bold mb-0 text-primary">{{ report.percentage }}%</h3>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="p-3 rounded border text-center bg-light">
+                        <small class="text-muted d-block text-uppercase fw-semibold">Letter Grade</small>
+                        <h3 class="fw-bold mb-0 {{ 'text-success' if report.grade in ['O', 'A+', 'A'] else ('text-warning' if report.grade in ['B', 'C', 'D'] else 'text-danger') }}">
+                            {{ report.grade }}
+                        </h3>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="p-3 rounded border text-center bg-light">
+                        <small class="text-muted d-block text-uppercase fw-semibold">Final Result</small>
+                        <h3 class="fw-bold mb-0 {{ 'text-success' if report.result_status == 'PASS' else 'text-danger' }}">
+                            {{ report.result_status }}
+                        </h3>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="p-3 rounded border text-center bg-light">
+                        <small class="text-muted d-block text-uppercase fw-semibold">Attendance Record</small>
+                        <h3 class="fw-bold mb-0 {{ 'text-success' if report.attendance_pct >= 75.0 else 'text-danger' }}">
+                            {{ report.attendance_pct }}%
+                        </h3>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-3 rounded border bg-light mb-4 text-center">
+                <span class="text-muted small">Academic Classification: </span>
+                <strong class="text-dark">{{ report.classification }}</strong>
+                {% if report.attendance_pct < 75.0 %}
+                    <span class="badge bg-danger ms-2"><i class="fas fa-exclamation-triangle me-1"></i>Attendance Shortage</span>
+                {% endif %}
+            </div>
+
+            <!-- Signature Authorities -->
+            <div class="row mt-5 pt-4 text-center">
+                <div class="col-4">
+                    <div style="border-top: 1px solid #94a3b8; width: 80%; margin: 0 auto; padding-top: 8px;">
+                        <small class="fw-semibold text-dark d-block">Controller of Examinations</small>
+                        <small class="text-muted">AITE Academic Council</small>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div style="border-top: 1px solid #94a3b8; width: 80%; margin: 0 auto; padding-top: 8px;">
+                        <small class="fw-semibold text-dark d-block">Dean Academics</small>
+                        <small class="text-muted">Faculty of Engineering</small>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div style="border-top: 1px solid #94a3b8; width: 80%; margin: 0 auto; padding-top: 8px;">
+                        <small class="fw-semibold text-dark d-block">Principal &amp; Director</small>
+                        <small class="text-muted">Apex Institute of Tech.</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,92 @@
+{% extends "layout.html" %}
+
+{% block title %}Live Attendance Tracking - Apex Institute ERP{% endblock %}
+
+{% block content %}
+<div class="page-title-box d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-1"><i class="fas fa-user-check text-primary me-2"></i>Attendance Tracker</h2>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a href="/dashboard">Home</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Attendance</li>
+            </ol>
+        </nav>
+    </div>
+    <div class="d-flex gap-2">
+        <span class="badge bg-danger-subtle text-danger border p-2 d-flex align-items-center">
+            <i class="fas fa-exclamation-triangle me-1"></i> Threshold: 75.0% Mandatory
+        </span>
+    </div>
+</div>
+
+<div class="custom-card p-4 bg-white rounded border shadow-sm">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h5 class="fw-bold mb-0">Class Attendance Roster</h5>
+            <small class="text-muted">Students with &lt; 75% attendance are automatically flagged in RED</small>
+        </div>
+        <span class="badge bg-light text-dark border">Term Semester</span>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Student ID</th>
+                    <th>Full Name</th>
+                    <th>Department</th>
+                    <th>Year</th>
+                    <th>Total Conducted</th>
+                    <th>Total Attended</th>
+                    <th>Attendance %</th>
+                    <th>Status Flag</th>
+                    <th class="text-end">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in records %}
+                <tr>
+                    <td><span class="badge bg-light text-dark border fw-bold">{{ item.student_id }}</span></td>
+                    <td>
+                        <div class="fw-bold text-dark">{{ item.name }}</div>
+                        <small class="text-muted">{{ item.email }}</small>
+                    </td>
+                    <td><span class="badge bg-primary-subtle text-primary">{{ item.department }}</span></td>
+                    <td><span class="badge bg-secondary-subtle text-secondary">{{ item.class_year }}</span></td>
+                    <td><span class="fw-semibold">{{ item.total_classes }}</span> hrs</td>
+                    <td><span class="fw-semibold text-dark">{{ item.attended_classes }}</span> hrs</td>
+                    <td>
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="progress flex-grow-1" style="height: 8px; width: 80px;">
+                                <div class="progress-bar {{ 'bg-success' if item.percentage >= 75.0 else 'bg-danger' }}" 
+                                     role="progressbar" style="width: {{ item.percentage }}%;"></div>
+                            </div>
+                            <span class="fw-bold {{ 'text-success' if item.percentage >= 75.0 else 'text-danger' }}">
+                                {{ item.percentage }}%
+                            </span>
+                        </div>
+                    </td>
+                    <td>
+                        {% if item.percentage >= 75.0 %}
+                            <span class="badge bg-success-subtle text-success border border-success-subtle">
+                                <i class="fas fa-check-circle me-1"></i> Normal
+                            </span>
+                        {% else %}
+                            <span class="badge bg-danger text-white">
+                                <i class="fas fa-exclamation-triangle me-1"></i> Shortage Alert
+                            </span>
+                        {% endif %}
+                    </td>
+                    <td class="text-end">
+                        <a href="/attendance/entry/{{ item.id }}" class="btn btn-sm btn-primary">
+                            <i class="fas fa-user-edit me-1"></i> Log Hours
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

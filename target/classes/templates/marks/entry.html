@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Enter Subject Marks - College ERP</title>
+</head>
+<body>
+<div th:replace="~{layout/main :: html(~{::#mainContent}, 'Marks Entry', 'marks')}">
+    <div id="mainContent">
+
+        <div class="page-title-box">
+            <div>
+                <h1><i class="fas fa-pen-nib text-primary me-2"></i>Subject Marks Entry</h1>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a th:href="@{/dashboard}">Home</a></li>
+                        <li class="breadcrumb-item"><a th:href="@{/marks}">Marks</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Entry</li>
+                    </ol>
+                </nav>
+            </div>
+            <div>
+                <a th:href="@{/marks}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-1"></i> Back to Marks Roster
+                </a>
+            </div>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-lg-9">
+
+                <!-- Student Information Card -->
+                <div class="custom-card p-4 mb-4 bg-light border">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <span class="badge bg-primary mb-1" th:text="${student.studentId}">STU2024001</span>
+                            <h4 class="fw-bold mb-1 text-dark" th:text="${student.name}">Student Name</h4>
+                            <div class="text-muted small">
+                                Department: <strong class="text-primary" th:text="${student.department}">CSE</strong> | 
+                                Class Year: <strong class="text-primary" th:text="${student.classYear}">TE</strong> | 
+                                Email: <span th:text="${student.email}">email@college.edu</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                            <div class="p-2 bg-white rounded border d-inline-block text-center">
+                                <small class="text-muted d-block">Current Aggregate</small>
+                                <strong class="fs-4 text-primary" th:text="${student.calculatePercentage() + '%'}">85.4%</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Marks Entry Form Card -->
+                <div class="custom-card">
+                    <div class="card-header-styled">
+                        <h5><i class="fas fa-edit text-primary"></i>Enter Marks for 5 Core Curriculum Subjects</h5>
+                        <span class="badge bg-warning-subtle text-warning-emphasis border">Scale: 0 to 100</span>
+                    </div>
+
+                    <div class="p-4">
+                        <div class="alert alert-info py-2 small mb-4">
+                            <i class="fas fa-info-circle me-1"></i>
+                            <strong>Academic Rule:</strong> Minimum passing mark per subject is <strong>35.0</strong>. Minimum overall aggregate is <strong>40.0%</strong>.
+                        </div>
+
+                        <form th:action="@{'/marks/entry/' + ${student.id}}" method="post">
+
+                            <div class="table-responsive mb-4">
+                                <table class="table table-bordered align-middle">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th style="width: 50px;">#</th>
+                                            <th>Subject Name</th>
+                                            <th style="width: 140px;">Max Marks</th>
+                                            <th style="width: 180px;">Marks Obtained</th>
+                                            <th style="width: 130px;">Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="subject, iter : ${defaultSubjects}">
+                                            <td class="text-center fw-bold" th:text="${iter.count}">1</td>
+                                            <td>
+                                                <strong class="text-dark" th:text="${subject}">Subject Name</strong>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-light text-dark border px-3 py-2">100.0</span>
+                                            </td>
+                                            <td>
+                                                <!-- Lookup existing mark for this subject -->
+                                                <div th:with="existingScore=${#lists.isEmpty(marks) ? 0.0 : 
+                                                    (marks.?[subject == #root.subject].size() > 0 ? marks.?[subject == #root.subject][0].marksObtained : 0.0)}">
+                                                    <input type="number" 
+                                                           th:name="${'marks_' + subject}" 
+                                                           class="form-control form-control-sm subject-mark-input" 
+                                                           th:value="${existingScore}" 
+                                                           min="0" max="100" step="0.5" required
+                                                           placeholder="0 - 100">
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <small class="text-muted">Min: 35.0</small>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                    <tfoot class="table-light fw-bold">
+                                        <tr>
+                                            <td colspan="2" class="text-end">Total Score:</td>
+                                            <td>500.0</td>
+                                            <td class="text-primary fs-5" id="liveTotalScore">0.0</td>
+                                            <td>
+                                                <span class="badge bg-primary" id="liveAvgScore">0.0%</span>
+                                            </td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+
+                            <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                                <a th:href="@{/marks}" class="btn btn-light px-4">Cancel</a>
+                                <button type="submit" class="btn btn-primary px-4 shadow-sm">
+                                    <i class="fas fa-save me-1"></i> Save Subject Marks
+                                </button>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+</body>
+</html>

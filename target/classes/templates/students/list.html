@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>All Students - College ERP</title>
+</head>
+<body>
+<div th:replace="~{layout/main :: html(~{::#mainContent}, 'Student Directory', 'viewStudents')}">
+    <div id="mainContent">
+
+        <div class="page-title-box">
+            <div>
+                <h1><i class="fas fa-users text-primary me-2"></i>Student Directory</h1>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a th:href="@{/dashboard}">Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Students</li>
+                    </ol>
+                </nav>
+            </div>
+            <div>
+                <a th:href="@{/students/add}" class="btn btn-primary shadow-sm">
+                    <i class="fas fa-user-plus me-1"></i> Enroll New Student
+                </a>
+            </div>
+        </div>
+
+        <!-- Search & Filter Card -->
+        <div class="custom-card p-3 mb-4">
+            <form th:action="@{/students}" method="get" class="row g-2 align-items-center">
+                <input type="hidden" name="sortBy" th:value="${sortBy}">
+                <input type="hidden" name="sortDir" th:value="${sortDir}">
+
+                <div class="col-md-5">
+                    <div class="input-group">
+                        <span class="input-group-text bg-white"><i class="fas fa-search text-muted"></i></span>
+                        <input type="text" name="query" class="form-control" placeholder="Search by Student ID or Name..." 
+                               th:value="${query}">
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <select name="department" class="form-select">
+                        <option value="">-- All Departments --</option>
+                        <option th:each="dept : ${departments}" 
+                                th:value="${dept}" 
+                                th:text="${dept}" 
+                                th:selected="${dept == selectedDepartment}"></option>
+                    </select>
+                </div>
+
+                <div class="col-md-3 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary flex-grow-1">
+                        <i class="fas fa-filter me-1"></i> Filter
+                    </button>
+                    <a th:href="@{/students}" class="btn btn-outline-secondary" title="Reset Filters">
+                        <i class="fas fa-undo"></i>
+                    </a>
+                </div>
+            </form>
+        </div>
+
+        <!-- Students Table Card -->
+        <div class="custom-card">
+            <div class="card-header-styled">
+                <h5>
+                    <i class="fas fa-graduation-cap text-primary"></i>Enrolled Students
+                    <span class="badge bg-primary-subtle text-primary ms-2" th:text="${totalItems + ' Records'}">12 Records</span>
+                </h5>
+                <div class="text-muted small">
+                    Page <span th:text="${currentPage + 1}">1</span> of <span th:text="${totalPages > 0 ? totalPages : 1}">1</span>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table erp-table align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>
+                                <a th:href="@{/students(page=0, size=${8}, sortBy='studentId', sortDir=${sortBy == 'studentId' ? reverseSortDir : 'asc'}, query=${query}, department=${selectedDepartment})}"
+                                   class="text-decoration-none text-dark d-flex align-items-center gap-1">
+                                    Roll / Student ID
+                                    <i class="fas fa-sort text-muted small"></i>
+                                </a>
+                            </th>
+                            <th>
+                                <a th:href="@{/students(page=0, size=${8}, sortBy='name', sortDir=${sortBy == 'name' ? reverseSortDir : 'asc'}, query=${query}, department=${selectedDepartment})}"
+                                   class="text-decoration-none text-dark d-flex align-items-center gap-1">
+                                    Name
+                                    <i class="fas fa-sort text-muted small"></i>
+                                </a>
+                            </th>
+                            <th>Department</th>
+                            <th>Class Year</th>
+                            <th>Contact Info</th>
+                            <th>Attendance</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="s : ${students}">
+                            <td>
+                                <strong class="text-primary font-monospace" th:text="${s.studentId}">STU2024001</strong>
+                            </td>
+                            <td>
+                                <div class="fw-bold" th:text="${s.name}">Aarav Sharma</div>
+                                <small class="text-muted" th:text="${'DOB: ' + #temporals.format(s.dob, 'dd-MMM-yyyy')}">DOB: 14-May-2003</small>
+                            </td>
+                            <td>
+                                <span class="badge bg-light text-dark border fw-semibold px-2 py-1" th:text="${s.department}">CSE</span>
+                            </td>
+                            <td>
+                                <span class="badge bg-secondary-subtle text-secondary px-2 py-1" th:text="${s.classYear}">TE</span>
+                            </td>
+                            <td>
+                                <div class="small"><i class="fas fa-envelope text-muted me-1"></i><span th:text="${s.email}">email@college.edu</span></div>
+                                <div class="small"><i class="fas fa-phone text-muted me-1"></i><span th:text="${s.phone}">9876543210</span></div>
+                            </td>
+                            <td>
+                                <div th:if="${s.attendance != null}">
+                                    <span th:if="${!s.attendance.shortage}" class="badge-attendance-ok">
+                                        <i class="fas fa-check-circle"></i> <span th:text="${s.attendance.percentage}">0.0</span>%
+                                    </span>
+                                    <span th:if="${s.attendance.shortage}" class="badge-attendance-shortage">
+                                        <i class="fas fa-exclamation-triangle"></i> <span th:text="${s.attendance.percentage}">0.0</span>%
+                                    </span>
+                                    <div class="text-muted small mt-1" th:text="${s.attendance.attendedClasses + '/' + s.attendance.totalClasses + ' classes'}">85/120 classes</div>
+                                </div>
+                                <div th:if="${s.attendance == null}">
+                                    <span class="badge bg-secondary">Not Entered</span>
+                                </div>
+                            </td>
+                            <td class="text-end">
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <!-- Academic Report -->
+                                    <a th:href="@{'/reports/view/' + ${s.id}}" class="btn btn-outline-info" title="Academic Transcript / Marksheet">
+                                        <i class="fas fa-file-invoice"></i> Report
+                                    </a>
+                                    <!-- Marks Entry -->
+                                    <a th:href="@{'/marks/entry/' + ${s.id}}" class="btn btn-outline-secondary" title="Marks Entry">
+                                        <i class="fas fa-pen-nib"></i>
+                                    </a>
+                                    <!-- Attendance Entry -->
+                                    <a th:href="@{'/attendance/entry/' + ${s.id}}" class="btn btn-outline-secondary" title="Attendance Record">
+                                        <i class="fas fa-calendar-check"></i>
+                                    </a>
+                                    <!-- Edit -->
+                                    <a th:href="@{'/students/edit/' + ${s.id}}" class="btn btn-outline-primary" title="Edit Profile">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <!-- Delete Modal Trigger -->
+                                    <button type="button" class="btn btn-outline-danger" 
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#deleteConfirmModal"
+                                            th:attr="data-student-id=${s.id}, data-student-name=${s.name + ' (' + s.studentId + ')'}"
+                                            title="Delete Student">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <!-- Empty State -->
+                        <tr th:if="${#lists.isEmpty(students)}">
+                            <td colspan="7" class="text-center py-5">
+                                <div class="text-muted">
+                                    <i class="fas fa-folder-open fs-1 mb-3 text-secondary d-block"></i>
+                                    <h5>No Student Records Found</h5>
+                                    <p class="mb-3">Try adjusting your search keywords or department filter.</p>
+                                    <a th:href="@{/students}" class="btn btn-outline-primary btn-sm me-2">Clear Search</a>
+                                    <a th:href="@{/students/add}" class="btn btn-primary btn-sm">Add New Student</a>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination Bar -->
+            <div class="card-footer bg-white border-top d-flex flex-wrap align-items-center justify-content-between p-3"
+                 th:if="${totalPages > 1}">
+                <div class="text-muted small mb-2 mb-md-0">
+                    Showing <span th:text="${currentPage * 8 + 1}">1</span> to 
+                    <span th:text="${(currentPage + 1) * 8 > totalItems ? totalItems : (currentPage + 1) * 8}">8</span>
+                    of <strong th:text="${totalItems}">12</strong> students
+                </div>
+
+                <nav aria-label="Student Directory Pagination">
+                    <ul class="pagination pagination-sm mb-0">
+                        <!-- Previous Page -->
+                        <li class="page-item" th:classappend="${currentPage == 0 ? 'disabled' : ''}">
+                            <a class="page-link" th:href="@{/students(page=${currentPage - 1}, size=${8}, sortBy=${sortBy}, sortDir=${sortDir}, query=${query}, department=${selectedDepartment})}">
+                                &laquo; Prev
+                            </a>
+                        </li>
+
+                        <!-- Page Numbers -->
+                        <li class="page-item" th:each="pageNum : ${#numbers.sequence(0, totalPages - 1)}"
+                            th:classappend="${pageNum == currentPage ? 'active' : ''}">
+                            <a class="page-link" 
+                               th:href="@{/students(page=${pageNum}, size=${8}, sortBy=${sortBy}, sortDir=${sortDir}, query=${query}, department=${selectedDepartment})}"
+                               th:text="${pageNum + 1}">1</a>
+                        </li>
+
+                        <!-- Next Page -->
+                        <li class="page-item" th:classappend="${currentPage + 1 >= totalPages ? 'disabled' : ''}">
+                            <a class="page-link" th:href="@{/students(page=${currentPage + 1}, size=${8}, sortBy=${sortBy}, sortDir=${sortDir}, query=${query}, department=${selectedDepartment})}">
+                                Next &raquo;
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+
+    </div>
+</div>
+</body>
+</html>

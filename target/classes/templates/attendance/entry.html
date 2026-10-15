@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Record Attendance - College ERP</title>
+</head>
+<body>
+<div th:replace="~{layout/main :: html(~{::#mainContent}, 'Record Attendance', 'attendance')}">
+    <div id="mainContent">
+
+        <div class="page-title-box">
+            <div>
+                <h1><i class="fas fa-calendar-check text-primary me-2"></i>Update Attendance Record</h1>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a th:href="@{/dashboard}">Home</a></li>
+                        <li class="breadcrumb-item"><a th:href="@{/attendance}">Attendance</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Record</li>
+                    </ol>
+                </nav>
+            </div>
+            <div>
+                <a th:href="@{/attendance}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-1"></i> Back to Attendance Register
+                </a>
+            </div>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+
+                <!-- Student Information Card -->
+                <div class="custom-card p-4 mb-4 bg-light border">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <span class="badge bg-primary mb-1" th:text="${student.studentId}">STU2024001</span>
+                            <h4 class="fw-bold mb-1 text-dark" th:text="${student.name}">Student Name</h4>
+                            <div class="text-muted small">
+                                Department: <strong class="text-primary" th:text="${student.department}">CSE</strong> | 
+                                Class Year: <strong class="text-primary" th:text="${student.classYear}">TE</strong>
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                            <div class="p-2 bg-white rounded border d-inline-block text-center">
+                                <small class="text-muted d-block">Recorded Attendance</small>
+                                <strong class="fs-4 text-primary" th:text="${attendance.percentage + '%'}">90.0%</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Card -->
+                <div class="custom-card">
+                    <div class="card-header-styled">
+                        <h5><i class="fas fa-edit text-primary"></i>Lecture &amp; Practical Class Entry</h5>
+                        <span class="badge bg-info-subtle text-info-emphasis border">Auto-Calculating</span>
+                    </div>
+
+                    <div class="p-4">
+                        <form th:action="@{'/attendance/entry/' + ${student.id}}" method="post">
+
+                            <div class="row g-4 mb-4">
+                                <!-- Total Classes -->
+                                <div class="col-md-6">
+                                    <label for="totalClasses" class="form-label">
+                                        Total Conducted Classes / Lectures <span class="text-danger">*</span>
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light"><i class="fas fa-chalkboard text-muted"></i></span>
+                                        <input type="number" class="form-control" id="totalClasses" name="totalClasses" 
+                                               th:value="${attendance.totalClasses}" min="0" required
+                                               placeholder="e.g. 120">
+                                    </div>
+                                    <small class="text-muted">Total lectures held in the semester</small>
+                                </div>
+
+                                <!-- Attended Classes -->
+                                <div class="col-md-6">
+                                    <label for="attendedClasses" class="form-label">
+                                        Classes Attended by Student <span class="text-danger">*</span>
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light"><i class="fas fa-user-check text-muted"></i></span>
+                                        <input type="number" class="form-control" id="attendedClasses" name="attendedClasses" 
+                                               th:value="${attendance.attendedClasses}" min="0" required
+                                               placeholder="e.g. 108">
+                                    </div>
+                                    <small class="text-muted">Actual classes attended</small>
+                                </div>
+                            </div>
+
+                            <!-- Live Calculation Box -->
+                            <div class="p-3 bg-light rounded-3 border mb-4">
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <span class="fw-bold text-dark">
+                                        <i class="fas fa-calculator text-primary me-1"></i> Auto-Calculated Attendance Percentage:
+                                    </span>
+                                    <span id="attendancePctPreview" class="badge fs-6 px-3 py-2 bg-secondary">
+                                        0.00%
+                                    </span>
+                                </div>
+                                <div id="attendanceAlertBox" style="display: none;" class="alert mb-0 py-2 small"></div>
+                            </div>
+
+                            <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                                <a th:href="@{/attendance}" class="btn btn-light px-4">Cancel</a>
+                                <button type="submit" class="btn btn-primary px-4 shadow-sm">
+                                    <i class="fas fa-save me-1"></i> Save Attendance
+                                </button>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+</body>
+</html>

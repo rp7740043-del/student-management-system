@@ -1,0 +1,173 @@
+{% extends "layout.html" %}
+
+{% block title %}Student Directory - Apex Institute ERP{% endblock %}
+
+{% block content %}
+<div class="page-title-box d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-1"><i class="fas fa-users text-primary me-2"></i>Student Directory</h2>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a href="/dashboard">Home</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Students</li>
+            </ol>
+        </nav>
+    </div>
+    <div>
+        <a href="/students/add" class="btn btn-primary shadow-sm">
+            <i class="fas fa-user-plus me-1"></i> Enroll New Student
+        </a>
+    </div>
+</div>
+
+<!-- Search & Filter Card -->
+<div class="custom-card p-3 bg-white rounded border shadow-sm mb-4">
+    <form action="/students" method="get" class="row g-2 align-items-center">
+        <div class="col-md-5">
+            <div class="input-group">
+                <span class="input-group-text bg-white"><i class="fas fa-search text-muted"></i></span>
+                <input type="text" name="query" class="form-control" placeholder="Search by Student ID, Name or Email..." value="{{ query }}">
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <select name="department" class="form-select">
+                <option value="">-- All Departments --</option>
+                {% for dept in departments %}
+                <option value="{{ dept }}" {% if selected_department == dept %}selected{% endif %}>{{ dept }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-md-3 d-flex gap-2">
+            <button type="submit" class="btn btn-primary flex-grow-1">
+                <i class="fas fa-filter me-1"></i> Filter
+            </button>
+            <a href="/students" class="btn btn-outline-secondary" title="Reset Filters">
+                <i class="fas fa-undo"></i>
+            </a>
+        </div>
+    </form>
+</div>
+
+<!-- Students Data Table -->
+<div class="custom-card p-4 bg-white rounded border shadow-sm">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <span class="text-muted small">Showing <strong>{{ students|length }}</strong> registered student(s)</span>
+        <span class="badge bg-light text-dark border">Academic Year 2024-2025</span>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Student ID</th>
+                    <th>Full Name</th>
+                    <th>Department</th>
+                    <th>Year</th>
+                    <th>Contact Info</th>
+                    <th>Gender</th>
+                    <th>Admission Date</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in students %}
+                <tr>
+                    <td><span class="badge bg-light text-dark border fw-bold">{{ student.student_id }}</span></td>
+                    <td>
+                        <div class="fw-bold text-dark">{{ student.name }}</div>
+                        <small class="text-muted">{{ student.email }}</small>
+                    </td>
+                    <td><span class="badge bg-primary-subtle text-primary">{{ student.department }}</span></td>
+                    <td><span class="badge bg-secondary-subtle text-secondary">{{ student.class_year }}</span></td>
+                    <td>
+                        <div class="small"><i class="fas fa-phone-alt text-muted me-1"></i>{{ student.phone }}</div>
+                        <small class="text-muted text-truncate d-inline-block" style="max-width: 180px;">{{ student.address }}</small>
+                    </td>
+                    <td><span class="badge bg-light text-muted">{{ student.gender }}</span></td>
+                    <td><small class="text-muted">{{ student.admission_date }}</small></td>
+                    <td class="text-end">
+                        <div class="btn-group btn-group-sm">
+                            <a href="/reports/{{ student.id }}" class="btn btn-outline-info" title="View Grade Report">
+                                <i class="fas fa-file-invoice"></i>
+                            </a>
+                            <a href="/students/edit/{{ student.id }}" class="btn btn-outline-primary" title="Edit Student">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <button type="button" class="btn btn-outline-danger" 
+                                    data-bs-toggle="modal" data-bs-target="#deleteConfirmModal"
+                                    data-student-id="{{ student.id }}" data-student-name="{{ student.name }}"
+                                    title="Delete Student">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="8" class="text-center py-5 text-muted">
+                        <i class="fas fa-user-slash fa-3x mb-3 text-secondary"></i>
+                        <h5>No student records found</h5>
+                        <p class="small">Try refining your search keyword or department filter criteria.</p>
+                        <a href="/students" class="btn btn-sm btn-outline-primary">Reset Filter</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="deleteModalLabel">
+                    <i class="fas fa-exclamation-triangle me-2"></i> Confirm Student Deletion
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <p>Are you sure you want to permanently delete student <strong id="deleteStudentNameSpan" class="text-danger"></strong>?</p>
+                <div class="alert alert-warning py-2 small mb-0">
+                    <i class="fas fa-info-circle me-1"></i> <strong>Cascading Rule:</strong> This action will permanently remove all associated academic marks and attendance records.
+                </div>
+            </div>
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                <form id="deleteStudentForm" method="post" action="">
+                    <button type="submit" class="btn btn-danger btn-sm">
+                        <i class="fas fa-trash-alt me-1"></i> Permanently Delete
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const deleteModal = document.getElementById('deleteConfirmModal');
+        if (deleteModal) {
+            deleteModal.addEventListener('show.bs.modal', function (event) {
+                const button = event.relatedTarget;
+                const studentId = button.getAttribute('data-student-id');
+                const studentName = button.getAttribute('data-student-name');
+                const deleteForm = document.getElementById('deleteStudentForm');
+                const studentNameSpan = document.getElementById('deleteStudentNameSpan');
+
+                if (deleteForm && studentId) {
+                    deleteForm.action = '/students/delete/' + studentId;
+                }
+                if (studentNameSpan && studentName) {
+                    studentNameSpan.textContent = studentName;
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

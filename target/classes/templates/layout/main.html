@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="html(content, pageTitle, activePage)">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${pageTitle != null ? pageTitle + ' - College ERP' : 'College Student Management System'}">College Student Management System</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome 6 Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+    <!-- Custom ERP Stylesheet -->
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+    <!-- TOP NAVBAR -->
+    <header class="top-navbar d-flex align-items-center justify-content-between">
+        <div class="d-flex align-items-center gap-3">
+            <button id="sidebarToggleBtn" class="btn btn-sm btn-light d-lg-none" type="button">
+                <i class="fas fa-bars"></i>
+            </button>
+            <a th:href="@{/dashboard}" class="college-brand">
+                <img th:src="@{/images/logo.svg}" alt="College Crest">
+                <div>
+                    <div class="brand-title">Apex Institute of Technology</div>
+                    <div class="brand-sub">Autonomous ERP Portal | OOPS Mini Project</div>
+                </div>
+            </a>
+        </div>
+
+        <div class="d-flex align-items-center gap-3">
+            <div class="dropdown">
+                <button class="btn btn-light d-flex align-items-center gap-2 border px-3 py-1 rounded-pill" 
+                        type="button" id="userMenuDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <img th:src="@{/images/avatar.svg}" alt="Avatar" width="30" height="30" class="rounded-circle">
+                    <span class="d-none d-md-inline fw-semibold" th:text="${session.username != null ? session.username : 'Administrator'}">Admin</span>
+                    <span class="badge bg-primary text-uppercase" th:text="${session.userRole != null ? session.userRole : 'ADMIN'}">ADMIN</span>
+                    <i class="fas fa-chevron-down text-muted" style="font-size: 0.75rem;"></i>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0" aria-labelledby="userMenuDropdown">
+                    <li class="px-3 py-2 border-bottom">
+                        <small class="text-muted d-block">Signed in as</small>
+                        <strong th:text="${session.username != null ? session.username : 'admin'}">admin</strong>
+                    </li>
+                    <li><a class="dropdown-item py-2" th:href="@{/students/add}"><i class="fas fa-user-plus me-2 text-primary"></i>Add Student</a></li>
+                    <li><a class="dropdown-item py-2" th:href="@{/reports}"><i class="fas fa-file-alt me-2 text-info"></i>Grade Reports</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item py-2 text-danger" th:href="@{/logout}"><i class="fas fa-sign-out-alt me-2"></i>Sign Out</a></li>
+                </ul>
+            </div>
+        </div>
+    </header>
+
+    <!-- WRAPPER: SIDEBAR + MAIN CONTENT -->
+    <div class="app-wrapper">
+        <!-- LEFT SIDEBAR -->
+        <aside class="app-sidebar" id="appSidebar">
+            <div>
+                <ul class="sidebar-menu">
+                    <li class="sidebar-category">Main Navigation</li>
+                    <li>
+                        <a th:href="@{/dashboard}" th:classappend="${activePage == 'dashboard' ? 'active' : ''}">
+                            <i class="fas fa-chart-pie"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+
+                    <li class="sidebar-category mt-3">Student Records</li>
+                    <li>
+                        <a th:href="@{/students/add}" th:classappend="${activePage == 'addStudent' ? 'active' : ''}">
+                            <i class="fas fa-user-plus"></i>
+                            <span>Add Student</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a th:href="@{/students}" th:classappend="${activePage == 'viewStudents' ? 'active' : ''}">
+                            <i class="fas fa-users"></i>
+                            <span>View All Students</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a th:href="@{/students/search}" th:classappend="${activePage == 'searchStudents' ? 'active' : ''}">
+                            <i class="fas fa-search"></i>
+                            <span>Search Student</span>
+                        </a>
+                    </li>
+
+                    <li class="sidebar-category mt-3">Academics & Analytics</li>
+                    <li>
+                        <a th:href="@{/marks}" th:classappend="${activePage == 'marks' ? 'active' : ''}">
+                            <i class="fas fa-clipboard-check"></i>
+                            <span>Marks Entry (5 Subjects)</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a th:href="@{/attendance}" th:classappend="${activePage == 'attendance' ? 'active' : ''}">
+                            <i class="fas fa-calendar-check"></i>
+                            <span>Attendance Tracking</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a th:href="@{/reports}" th:classappend="${activePage == 'reports' ? 'active' : ''}">
+                            <i class="fas fa-graduation-cap"></i>
+                            <span>Academic Reports</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Sidebar Bottom Info -->
+            <div class="sidebar-footer">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <small class="text-muted fw-bold">PORTAL STATUS</small>
+                    <span class="badge bg-success-subtle text-success">ONLINE</span>
+                </div>
+                <a th:href="@{/logout}" class="btn btn-sm btn-outline-danger w-100">
+                    <i class="fas fa-power-off me-1"></i> Sign Out
+                </a>
+            </div>
+        </aside>
+
+        <!-- MAIN VIEWPORT -->
+        <main class="app-main-content">
+            <!-- Flash Alert Notifications -->
+            <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+                <i class="fas fa-check-circle me-2"></i>
+                <span th:text="${successMessage}">Operation successful!</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+
+            <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+                <i class="fas fa-exclamation-circle me-2"></i>
+                <span th:text="${errorMessage}">An error occurred!</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+
+            <!-- DYNAMIC BODY FRAGMENT -->
+            <div th:replace="${content}"></div>
+        </main>
+    </div>
+
+    <!-- GLOBAL DELETE CONFIRMATION MODAL -->
+    <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteModalTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="deleteModalTitle">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Confirm Deletion
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <p class="mb-2">Are you sure you want to delete student: <strong id="deleteStudentNameSpan" class="text-danger"></strong>?</p>
+                    <p class="text-muted small mb-0">
+                        <i class="fas fa-info-circle me-1"></i>
+                        This action will permanently delete all associated 5-subject marks and attendance records (Database Cascade Delete).
+                    </p>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary px-3" data-bs-dismiss="modal">Cancel</button>
+                    <form id="deleteStudentForm" method="post" action="">
+                        <button type="submit" class="btn btn-danger px-3">
+                            <i class="fas fa-trash-alt me-1"></i> Delete Record
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="app-footer text-center">
+        <div class="container-fluid">
+            <div class="row align-items-center">
+                <div class="col-md-6 text-md-start mb-2 mb-md-0">
+                    <strong>Student Management System</strong> – OOPS Mini Project | Spring Boot &amp; MySQL
+                </div>
+                <div class="col-md-6 text-md-end text-muted">
+                    Engineered with Object-Oriented Principles | Academic Year 2024–2025
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom Application JS -->
+    <script th:src="@{/js/main.js}"></script>
+</body>
+</html>

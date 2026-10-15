@@ -1,0 +1,130 @@
+{% extends "layout.html" %}
+
+{% block title %}Record Marks - {{ student.name }} - Apex Institute ERP{% endblock %}
+
+{% block content %}
+<div class="page-title-box d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-1"><i class="fas fa-marker text-primary me-2"></i>Subject Marks Entry</h2>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a href="/dashboard">Home</a></li>
+                <li class="breadcrumb-item"><a href="/marks">Marks</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ student.student_id }}</li>
+            </ol>
+        </nav>
+    </div>
+    <div>
+        <a href="/marks" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i> Back to Marks List
+        </a>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="custom-card p-4 p-md-5 bg-white rounded border shadow-sm">
+            <!-- Student Header Badge -->
+            <div class="d-flex align-items-center justify-content-between p-3 bg-light rounded border mb-4">
+                <div class="d-flex align-items-center gap-3">
+                    <img src="/static/images/avatar.svg" width="48" height="48" class="rounded-circle border">
+                    <div>
+                        <h5 class="fw-bold mb-0 text-dark">{{ student.name }}</h5>
+                        <small class="text-muted">Roll: <strong>{{ student.student_id }}</strong> | Dept: <strong>{{ student.department }}</strong> ({{ student.class_year }})</small>
+                    </div>
+                </div>
+                <span class="badge bg-primary px-3 py-2">Max Marks: 100 Each</span>
+            </div>
+
+            <form action="/marks/entry/{{ student.id }}" method="post" id="marksForm">
+                <div class="table-responsive mb-4">
+                    <table class="table table-bordered align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width: 50px;">#</th>
+                                <th>Curriculum Subject</th>
+                                <th style="width: 140px;">Max Marks</th>
+                                <th style="width: 180px;">Marks Obtained</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% set subjects = [
+                                'Object Oriented Programming',
+                                'Database Management Systems',
+                                'Data Structures & Algorithms',
+                                'Computer Networks',
+                                'Operating Systems'
+                            ] %}
+                            {% for sub in subjects %}
+                            <tr>
+                                <td class="text-center fw-bold text-muted">{{ loop.index }}</td>
+                                <td class="fw-semibold text-dark">{{ sub }}</td>
+                                <td class="text-muted">100.0</td>
+                                <td>
+                                    <div class="input-group input-group-sm">
+                                        <input type="number" step="0.5" min="0" max="100" class="form-control mark-input" 
+                                               name="subject_{{ loop.index0 }}" 
+                                               value="{{ marks_dict.get(sub, 0.0) }}" 
+                                               required>
+                                        <span class="input-group-text">/ 100</span>
+                                    </div>
+                                    <input type="hidden" name="subject_name_{{ loop.index0 }}" value="{{ sub }}">
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot class="table-light">
+                            <tr>
+                                <th colspan="3" class="text-end">Aggregate Total Marks (/500):</th>
+                                <th id="totalMarksPreview" class="fw-bold text-primary">0.0</th>
+                            </tr>
+                            <tr>
+                                <th colspan="3" class="text-end">Aggregate Percentage:</th>
+                                <th id="percentagePreview" class="fw-bold text-success">0.0%</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+                <div class="alert alert-info py-2 small mb-4">
+                    <i class="fas fa-info-circle me-1"></i>
+                    <strong>Statutory Rule:</strong> A minimum of 35.0 marks in each individual subject AND an aggregate of &ge; 40.0% is required for passing.
+                </div>
+
+                <div class="d-flex justify-content-end gap-2">
+                    <a href="/marks" class="btn btn-light px-4">Cancel</a>
+                    <button type="submit" class="btn btn-primary px-4 shadow-sm">
+                        <i class="fas fa-save me-1"></i> Save Academic Marks
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const inputs = document.querySelectorAll('.mark-input');
+        const totalSpan = document.getElementById('totalMarksPreview');
+        const pctSpan = document.getElementById('percentagePreview');
+
+        function recalculate() {
+            let total = 0;
+            inputs.forEach(input => {
+                total += parseFloat(input.value) || 0;
+            });
+            const pct = (total / 500) * 100;
+            if (totalSpan) totalSpan.textContent = total.toFixed(1);
+            if (pctSpan) pctSpan.textContent = pct.toFixed(2) + '%';
+        }
+
+        inputs.forEach(input => {
+            input.addEventListener('input', recalculate);
+        });
+
+        recalculate();
+    });
+</script>
+{% endblock %}

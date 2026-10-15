@@ -1,0 +1,142 @@
+{% extends "layout.html" %}
+
+{% block title %}Search Student - Apex Institute ERP{% endblock %}
+
+{% block content %}
+<div class="page-title-box">
+    <div>
+        <h1><i class="fas fa-search text-primary me-2"></i>Student Search Portal</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/dashboard">Home</a></li>
+                <li class="breadcrumb-item"><a href="/students">Students</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Search</li>
+            </ol>
+        </nav>
+    </div>
+    <div>
+        <a href="/students" class="btn btn-outline-secondary">
+            <i class="fas fa-list me-1"></i> Full Directory
+        </a>
+    </div>
+</div>
+
+<!-- Search Form Card -->
+<div class="custom-card p-4 mb-4 bg-white rounded border shadow-sm">
+    <h5 class="fw-bold text-primary mb-3">
+        <i class="fas fa-sliders-h me-2"></i>Lookup by Student ID, Name or Email
+    </h5>
+    <form action="/students/search" method="get" class="row g-3">
+        <div class="col-md-6">
+            <label for="searchQuery" class="form-label fw-semibold">Search Query (Student ID / Name / Email)</label>
+            <div class="input-group">
+                <span class="input-group-text bg-light"><i class="fas fa-user-tag text-muted"></i></span>
+                <input type="text" class="form-control" id="searchQuery" name="query" 
+                       placeholder="e.g. STU2024001 or Priya Patel..." value="{{ query }}">
+            </div>
+            <small class="text-muted">Supports full or partial name and ID matching (demonstrates OOP Method Overloading)</small>
+        </div>
+
+        <div class="col-md-4">
+            <label for="searchDept" class="form-label fw-semibold">Department Filter (Optional)</label>
+            <select class="form-select" id="searchDept" name="department">
+                <option value="">-- All Departments --</option>
+                {% for dept in departments %}
+                <option value="{{ dept }}" {% if selected_department == dept %}selected{% endif %}>{{ dept }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-md-2 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary w-100 py-2 shadow-sm">
+                <i class="fas fa-search me-1"></i> Search
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- Search Results Section -->
+{% if has_searched %}
+    {% if results %}
+    <div class="custom-card bg-white rounded border shadow-sm mb-4">
+        <div class="card-header-styled">
+            <h5>
+                <i class="fas fa-check-circle text-success me-1"></i> Search Results
+                <span class="badge bg-success-subtle text-success ms-2">{{ results|length }} Student(s) Found</span>
+            </h5>
+            <a href="/students/search" class="btn btn-sm btn-outline-secondary">Reset Search</a>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Student ID</th>
+                        <th>Full Name</th>
+                        <th>Department</th>
+                        <th>Class Year</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for s in results %}
+                    <tr>
+                        <td><strong class="text-primary font-monospace">{{ s.student_id }}</strong></td>
+                        <td>
+                            <div class="fw-bold">{{ s.name }}</div>
+                            <small class="text-muted">{{ s.gender }}</small>
+                        </td>
+                        <td><span class="badge bg-light text-dark border fw-semibold">{{ s.department }}</span></td>
+                        <td><span class="badge bg-secondary-subtle text-secondary">{{ s.class_year }}</span></td>
+                        <td class="text-muted small">{{ s.email }}</td>
+                        <td class="text-muted small">{{ s.phone }}</td>
+                        <td class="text-end">
+                            <div class="btn-group btn-group-sm">
+                                <a href="/reports/{{ s.id }}" class="btn btn-outline-info" title="Academic Marksheet">
+                                    <i class="fas fa-file-invoice me-1"></i> Marksheet
+                                </a>
+                                <a href="/students/edit/{{ s.id }}" class="btn btn-outline-secondary" title="Edit Student">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% else %}
+    <!-- When NO records match ("No record found" message) -->
+    <div class="custom-card p-5 text-center bg-white rounded border shadow-sm">
+        <div class="py-4">
+            <i class="fas fa-search-minus text-warning display-4 mb-3 d-block"></i>
+            <h3 class="fw-bold text-dark mb-2">No record found</h3>
+            <p class="text-muted max-w-md mx-auto mb-4">
+                We could not find any student matching your query
+                {% if query %}<strong class="text-primary">"{{ query }}"</strong>{% endif %}
+                {% if selected_department %}in department <strong class="text-primary">"{{ selected_department }}"</strong>{% endif %}.
+                Please verify the ID or name and try again.
+            </p>
+            <div class="d-flex justify-content-center gap-2">
+                <a href="/students/search" class="btn btn-outline-primary">
+                    <i class="fas fa-undo me-1"></i> Reset Search
+                </a>
+                <a href="/students/add" class="btn btn-primary">
+                    <i class="fas fa-user-plus me-1"></i> Register as New Student
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+{% else %}
+    <!-- Initial state before search -->
+    <div class="custom-card p-5 text-center text-muted bg-white rounded border shadow-sm">
+        <i class="fas fa-user-tag fs-1 text-primary opacity-50 mb-3 d-block"></i>
+        <h5>Enter student roll number, registration ID, or name above to begin search.</h5>
+        <p class="small mb-0">You can also filter by specific departments (CSE, IT, ENTC, Mechanical, Civil, AI&DS).</p>
+    </div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,138 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam monochrome false
+skinparam roundcorner 10
+skinparam class {
+    BackgroundColor LightCyan
+    ArrowColor Navy
+    BorderColor Navy
+}
+
+package "com.college.sms.model" {
+    
+    interface Reportable <<interface>> {
+        + calculatePercentage(): double
+        + determineGrade(): String
+        + getResultStatus(): String
+        + getPerformanceSummary(): String
+    }
+
+    interface StudentOperations <<interface>> {
+        + saveStudent(Student): Student
+        + updateStudent(Long, Student): Student
+        + deleteStudent(Long): void
+        + findById(Long): Optional<Student>
+        + findByStudentId(String): Optional<Student>
+        + getAllStudents(): List<Student>
+    }
+
+    abstract class Person {
+        - id: Long
+        - name: String
+        - email: String
+        - phone: String
+        - address: String
+        - dob: LocalDate
+        - gender: String
+        + Person()
+        + Person(Long, String, String, String, String, LocalDate, String)
+        + {abstract} getRoleDescription(): String
+        + displayDetails(): String
+        + getId(): Long
+        + getName(): String
+        + getEmail(): String
+        + getPhone(): String
+    }
+
+    class Student {
+        - {static} totalStudentsInstantiated: int
+        - studentId: String
+        - department: String
+        - classYear: String
+        - admissionDate: LocalDate
+        - marks: List<Mark>
+        - attendance: Attendance
+        + Student()
+        + Student(Long, String, String, String, String, LocalDate, String, String, String, String, LocalDate)
+        + {static} getTotalStudentsInstantiated(): int
+        + getRoleDescription(): String
+        + displayDetails(): String
+        + calculatePercentage(): double
+        + determineGrade(): String
+        + getResultStatus(): String
+        + getPerformanceSummary(): String
+    }
+
+    class Mark {
+        - id: Long
+        - student: Student
+        - subject: String
+        - marksObtained: Double
+        - maxMarks: Double
+        + Mark()
+        + Mark(Student, String, Double)
+        + isPassed(): boolean
+        + setMarksObtained(Double): void
+    }
+
+    class Attendance {
+        - id: Long
+        - student: Student
+        - totalClasses: Integer
+        - attendedClasses: Integer
+        + Attendance()
+        + Attendance(Student, Integer, Integer)
+        + getPercentage(): double
+        + isShortage(): boolean
+    }
+
+    class User {
+        - id: Long
+        - username: String
+        - password: String
+        - role: Role
+        - createdAt: LocalDateTime
+        + User()
+        + User(String, String, Role)
+    }
+
+    enum Role <<enumeration>> {
+        ADMIN
+        TEACHER
+    }
+}
+
+package "com.college.sms.service" {
+    interface StudentService {
+        + searchStudent(Long): Optional<Student>
+        + searchStudent(int): Optional<Student>
+        + searchStudent(String): List<Student>
+        + searchStudent(String, String): List<Student>
+        + getStudentsPaged(...): Page<Student>
+        + getDepartmentStudentCounts(): Map<String, Long>
+    }
+
+    class StudentServiceImpl {
+        - studentRepository: StudentRepository
+        - markRepository: MarkRepository
+        - attendanceRepository: AttendanceRepository
+    }
+}
+
+package "com.college.sms.exception" {
+    class StudentNotFoundException <<RuntimeException>>
+    class InvalidMarksException <<RuntimeException>>
+    class DuplicateStudentException <<RuntimeException>>
+}
+
+' Relationships & OOP Concept Realizations
+Person <|-- Student : Inheritance (extends)
+Reportable <|.. Student : Abstraction (implements)
+StudentOperations <|-- StudentService : Inheritance (extends)
+StudentService <|.. StudentServiceImpl : Abstraction (implements)
+
+Student "1" *-- "0..5" Mark : Encapsulates (Composition)
+Student "1" *-- "0..1" Attendance : Encapsulates (Composition)
+User --> Role : Uses
+
+@enduml

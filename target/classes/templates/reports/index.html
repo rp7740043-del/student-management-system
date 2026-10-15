@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Academic Reports Directory - College ERP</title>
+</head>
+<body>
+<div th:replace="~{layout/main :: html(~{::#mainContent}, 'Academic Reports', 'reports')}">
+    <div id="mainContent">
+
+        <div class="page-title-box">
+            <div>
+                <h1><i class="fas fa-graduation-cap text-primary me-2"></i>Official Academic Grade Reports</h1>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a th:href="@{/dashboard}">Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Reports</li>
+                    </ol>
+                </nav>
+            </div>
+            <div>
+                <a th:href="@{/students}" class="btn btn-outline-secondary">
+                    <i class="fas fa-users me-1"></i> Student Directory
+                </a>
+            </div>
+        </div>
+
+        <div class="custom-card">
+            <div class="card-header-styled">
+                <h5><i class="fas fa-file-invoice text-primary"></i>Student Performance Transcripts</h5>
+                <span class="badge bg-primary-subtle text-primary" th:text="${#lists.size(students) + ' Students'}">12 Students</span>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table erp-table align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Student ID</th>
+                            <th>Student Name</th>
+                            <th>Department</th>
+                            <th>Class Year</th>
+                            <th>Percentage</th>
+                            <th>Grade</th>
+                            <th>Result Status</th>
+                            <th>Attendance</th>
+                            <th class="text-end">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="s : ${students}">
+                            <td><strong class="text-primary font-monospace" th:text="${s.studentId}">STU2024001</strong></td>
+                            <td class="fw-bold" th:text="${s.name}">Aarav Sharma</td>
+                            <td><span class="badge bg-light text-dark border fw-semibold" th:text="${s.department}">CSE</span></td>
+                            <td><span class="badge bg-secondary-subtle text-secondary" th:text="${s.classYear}">TE</span></td>
+                            <td>
+                                <strong class="fs-6" th:text="${s.calculatePercentage() + '%'}">85.4%</strong>
+                            </td>
+                            <td>
+                                <span class="grade-badge" 
+                                      th:classappend="'grade-' + ${#strings.replace(s.determineGrade(), '+', 'p')}"
+                                      th:text="${s.determineGrade()}">A+</span>
+                            </td>
+                            <td>
+                                <span th:if="${s.getResultStatus() == 'PASS'}" class="badge-pass">PASS</span>
+                                <span th:if="${s.getResultStatus() == 'FAIL'}" class="badge-fail">FAIL</span>
+                                <span th:if="${s.getResultStatus() == 'N/A'}" class="badge bg-secondary">N/A</span>
+                            </td>
+                            <td>
+                                <span th:if="${s.attendance != null and !s.attendance.shortage}" class="badge-attendance-ok">
+                                    <span th:text="${s.attendance.percentage}">0.0</span>%
+                                </span>
+                                <span th:if="${s.attendance != null and s.attendance.shortage}" class="badge-attendance-shortage">
+                                    <span th:text="${s.attendance.percentage}">0.0</span>%
+                                </span>
+                                <span th:if="${s.attendance == null}" class="text-muted small">N/A</span>
+                            </td>
+                            <td class="text-end">
+                                <a th:href="@{'/reports/view/' + ${s.id}}" class="btn btn-sm btn-primary">
+                                    <i class="fas fa-file-invoice me-1"></i> View Marksheet
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>
+</body>
+</html>

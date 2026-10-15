@@ -1,0 +1,267 @@
+{% extends "layout.html" %}
+
+{% block title %}Executive Dashboard - Apex Institute ERP{% endblock %}
+
+{% block content %}
+<!-- College Campus Hero Banner -->
+<div class="custom-card p-4 text-white mb-4 position-relative overflow-hidden" 
+     style="background: linear-gradient(135deg, rgba(30, 58, 138, 0.95), rgba(37, 99, 235, 0.85)), url('/static/images/campus.svg') center/cover; border-radius: 12px;">
+    <div class="row align-items-center position-relative" style="z-index: 2;">
+        <div class="col-lg-8">
+            <span class="badge bg-warning text-dark fw-bold mb-2 text-uppercase">Academic ERP Portal</span>
+            <h2 class="fw-bold mb-1">Apex Institute of Technology &amp; Engineering</h2>
+            <p class="mb-3 text-white-50">Accredited with 'A+' Grade by NAAC | OOPS Concept-Driven Student Information &amp; Academic System</p>
+            <div class="d-flex flex-wrap gap-2">
+                <a href="/students/add" class="btn btn-light fw-semibold text-primary btn-sm px-3 shadow-sm">
+                    <i class="fas fa-user-plus me-1"></i> Enroll New Student
+                </a>
+                <a href="/students" class="btn btn-outline-light btn-sm px-3">
+                    <i class="fas fa-list me-1"></i> Student Directory
+                </a>
+                <a href="/reports" class="btn btn-outline-light btn-sm px-3">
+                    <i class="fas fa-file-invoice me-1"></i> Print Reports
+                </a>
+            </div>
+        </div>
+        <div class="col-lg-4 text-end d-none d-lg-block">
+            <img src="/static/images/graduation.svg" alt="Graduation" style="max-height: 110px; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));">
+        </div>
+    </div>
+</div>
+
+<!-- 4 Core Metric Cards -->
+<div class="row g-3 mb-4">
+    <!-- 1. Total Students -->
+    <div class="col-sm-6 col-xl-3">
+        <div class="metric-card p-3 bg-white rounded border shadow-sm d-flex align-items-center">
+            <div class="metric-icon me-3 text-primary bg-primary-subtle p-3 rounded-circle">
+                <i class="fas fa-user-graduate fa-2x"></i>
+            </div>
+            <div>
+                <div class="text-muted small fw-semibold">Total Students</div>
+                <h3 class="mb-0 fw-bold">{{ stats.total_students }}</h3>
+                <small class="text-success"><i class="fas fa-arrow-up"></i> Active Enrolled</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. Academic Departments -->
+    <div class="col-sm-6 col-xl-3">
+        <div class="metric-card p-3 bg-white rounded border shadow-sm d-flex align-items-center">
+            <div class="metric-icon me-3 text-info bg-info-subtle p-3 rounded-circle">
+                <i class="fas fa-university fa-2x"></i>
+            </div>
+            <div>
+                <div class="text-muted small fw-semibold">Departments</div>
+                <h3 class="mb-0 fw-bold">{{ stats.departments_count }}</h3>
+                <small class="text-muted">Engineering Streams</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. Average Attendance -->
+    <div class="col-sm-6 col-xl-3">
+        <div class="metric-card p-3 bg-white rounded border shadow-sm d-flex align-items-center">
+            <div class="metric-icon me-3 text-success bg-success-subtle p-3 rounded-circle">
+                <i class="fas fa-calendar-check fa-2x"></i>
+            </div>
+            <div>
+                <div class="text-muted small fw-semibold">Avg Attendance</div>
+                <h3 class="mb-0 fw-bold">{{ stats.avg_attendance }}%</h3>
+                <small class="text-muted">Threshold: 75%</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. Result Status -->
+    <div class="col-sm-6 col-xl-3">
+        <div class="metric-card p-3 bg-white rounded border shadow-sm d-flex align-items-center">
+            <div class="metric-icon me-3 text-warning bg-warning-subtle p-3 rounded-circle">
+                <i class="fas fa-award fa-2x"></i>
+            </div>
+            <div>
+                <div class="text-muted small fw-semibold">Pass / Fail</div>
+                <h3 class="mb-0 fw-bold"><span class="text-success">{{ stats.passed_count }}</span> / <span class="text-danger">{{ stats.failed_count }}</span></h3>
+                <small class="text-muted">{{ stats.pass_rate }}% Clearance Rate</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Attendance Statutory Shortage Warning Banner -->
+{% if stats.shortage_count > 0 %}
+<div class="alert alert-danger d-flex align-items-center mb-4 shadow-sm" role="alert">
+    <i class="fas fa-exclamation-triangle fa-2x me-3 text-danger"></i>
+    <div class="flex-grow-1">
+        <strong>Statutory Attendance Shortage Warning:</strong>
+        <span>{{ stats.shortage_count }} student(s) are currently falling below the university mandatory 75% attendance threshold. Immediate action or parent notification is recommended.</span>
+    </div>
+    <a href="/attendance" class="btn btn-sm btn-danger px-3 text-nowrap ms-2">
+        <i class="fas fa-eye me-1"></i> Inspect Shortages
+    </a>
+</div>
+{% endif %}
+
+<!-- Analytics Charts & Quick Actions -->
+<div class="row g-4 mb-4">
+    <!-- Department Distribution Doughnut Chart -->
+    <div class="col-lg-6">
+        <div class="custom-card p-4 bg-white rounded border shadow-sm h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="fw-bold mb-0"><i class="fas fa-chart-pie text-primary me-2"></i>Department Distribution</h5>
+                <span class="badge bg-light text-muted border">All Years</span>
+            </div>
+            <div style="position: relative; height: 260px;">
+                <canvas id="deptChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pass/Fail Bar Chart -->
+    <div class="col-lg-6">
+        <div class="custom-card p-4 bg-white rounded border shadow-sm h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="fw-bold mb-0"><i class="fas fa-chart-bar text-success me-2"></i>Academic Clearance</h5>
+                <span class="badge bg-light text-muted border">Current Term</span>
+            </div>
+            <div style="position: relative; height: 260px;">
+                <canvas id="resultChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Navigation Action Strip -->
+<div class="custom-card p-3 bg-white rounded border shadow-sm mb-4">
+    <div class="row g-2 align-items-center">
+        <div class="col-md-3">
+            <span class="fw-semibold text-muted small text-uppercase"><i class="fas fa-bolt text-warning me-1"></i>Quick Actions:</span>
+        </div>
+        <div class="col-md-9 d-flex flex-wrap gap-2 justify-content-md-end">
+            <a href="/students/add" class="btn btn-outline-primary btn-sm"><i class="fas fa-user-plus me-1"></i>New Enrollment</a>
+            <a href="/marks" class="btn btn-outline-info btn-sm"><i class="fas fa-marker me-1"></i>Input Subject Marks</a>
+            <a href="/attendance" class="btn btn-outline-success btn-sm"><i class="fas fa-user-clock me-1"></i>Log Attendance</a>
+            <a href="/reports" class="btn btn-outline-secondary btn-sm"><i class="fas fa-print me-1"></i>Official Marksheets</a>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Students Table -->
+<div class="custom-card p-4 bg-white rounded border shadow-sm">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="fw-bold mb-0"><i class="fas fa-user-clock text-info me-2"></i>Recently Enrolled Students</h5>
+        <a href="/students" class="btn btn-sm btn-outline-primary">View All Students <i class="fas fa-arrow-right ms-1"></i></a>
+    </div>
+    
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Student ID</th>
+                    <th>Full Name</th>
+                    <th>Department</th>
+                    <th>Year</th>
+                    <th>Attendance</th>
+                    <th>Result Status</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in recent_students %}
+                <tr>
+                    <td><span class="badge bg-light text-dark border fw-bold">{{ student.student_id }}</span></td>
+                    <td>
+                        <div class="fw-semibold text-dark">{{ student.name }}</div>
+                        <small class="text-muted">{{ student.email }}</small>
+                    </td>
+                    <td><span class="badge bg-primary-subtle text-primary">{{ student.department }}</span></td>
+                    <td><span class="badge bg-secondary-subtle text-secondary">{{ student.class_year }}</span></td>
+                    <td>
+                        {% if student.attendance_pct >= 75.0 %}
+                            <span class="badge bg-success-subtle text-success fw-bold">{{ student.attendance_pct }}%</span>
+                        {% else %}
+                            <span class="badge bg-danger-subtle text-danger fw-bold"><i class="fas fa-exclamation-circle me-1"></i>{{ student.attendance_pct }}%</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if student.result_status == 'PASS' %}
+                            <span class="badge bg-success">PASS</span>
+                        {% else %}
+                            <span class="badge bg-danger">FAIL</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-end">
+                        <div class="btn-group btn-group-sm">
+                            <a href="/reports/{{ student.id }}" class="btn btn-outline-info" title="Academic Marksheet"><i class="fas fa-file-invoice"></i></a>
+                            <a href="/students/edit/{{ student.id }}" class="btn btn-outline-secondary" title="Edit Student"><i class="fas fa-edit"></i></a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // 1. Department Distribution Doughnut Chart
+        const deptCtx = document.getElementById('deptChart');
+        if (deptCtx) {
+            new Chart(deptCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: {{ dept_labels | tojson }},
+                    datasets: [{
+                        data: {{ dept_counts | tojson }},
+                        backgroundColor: ['#2563eb', '#06b6d4', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899'],
+                        borderWidth: 2,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'right' }
+                    }
+                }
+            });
+        }
+
+        // 2. Pass / Fail Bar Chart
+        const resultCtx = document.getElementById('resultChart');
+        if (resultCtx) {
+            new Chart(resultCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Passed (>=40% & all >=35)', 'Failed (<40% or backlog)'],
+                    datasets: [{
+                        label: 'Students Count',
+                        data: [{{ stats.passed_count }}, {{ stats.failed_count }}],
+                        backgroundColor: ['rgba(16, 185, 129, 0.85)', 'rgba(239, 68, 68, 0.85)'],
+                        borderColor: ['#10b981', '#ef4444'],
+                        borderWidth: 1.5,
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { stepSize: 1 }
+                        }
+                    }
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}
